@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Jeu Amélioré</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f4f4f9;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #004080;
+      color: white;
+      padding: 20px;
+    }
+    #gameArea {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      margin: 30px auto;
+      border: 2px solid #004080;
+      background: #e0f0ff;
+    }
+    #square {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: red;
+      cursor: pointer;
+    }
+    #score, #bestScore, #timer, #message {
+      font-size: 20px;
+      margin-top: 10px;
+      color: #004080;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 20px;
+      background: #004080;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0066cc;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mini Jeu : Clique sur le carré</h1>
+    <p>Tu as 30 secondes pour marquer un maximum de points !</p>
+  </header>
+
+  <div id="gameArea">
+    <div id="square"></div>
+  </div>
+
+  <div id="score">Score : 0</div>
+  <div id="bestScore">Meilleur score : 0</div>
+  <div id="timer">Temps restant : 30s</div>
+  <div id="message"></div>
+  <button onclick="startGame()">Rejouer</button>
+
+  <script>
+    let score = 0;
+    let bestScore = 0;
+    let timeLeft = 30;
+    let gameInterval, timerInterval;
+    const square = document.getElementById("square");
+    const gameArea = document.getElementById("gameArea");
+    const scoreDisplay = document.getElementById("score");
+    const bestScoreDisplay = document.getElementById("bestScore");
+    const timerDisplay = document.getElementById("timer");
+    const messageDisplay = document.getElementById("message");
+
+    function randomPosition() {
+      const maxX = gameArea.clientWidth - square.clientWidth;
+      const maxY = gameArea.clientHeight - square.clientHeight;
+      const x = Math.floor(Math.random() * maxX);
+      const y = Math.floor(Math.random() * maxY);
+      square.style.left = x + "px";
+      square.style.top = y + "px";
+    }
+
+    square.addEventListener("click", () => {
+      score++;
+      scoreDisplay.textContent = "Score : " + score;
+      randomPosition();
+    });
+
+    function startGame() {
+      score = 0;
+      timeLeft = 30;
+      scoreDisplay.textContent = "Score : " + score;
+      timerDisplay.textContent = "Temps restant : " + timeLeft + "s";
+      messageDisplay.textContent = "";
+      randomPosition();
+
+      clearInterval(gameInterval);
+      clearInterval(timerInterval);
+
+      // Le carré bouge automatiquement toutes les 800 ms
+      gameInterval = setInterval(randomPosition, 800);
+
+      // Chronomètre
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = "Temps restant : " + timeLeft + "s";
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function endGame() {
+      clearInterval(gameInterval);
+      clearInterval(timerInterval);
+      messageDisplay.textContent = "Fin du jeu ! Score final : " + score;
+
+      // Mise à jour du meilleur score
+      if (score > bestScore) {
+        bestScore = score;
+        bestScoreDisplay.textContent = "Meilleur score : " + bestScore;
+        messageDisplay.textContent += " 🎉 Nouveau record !";
+      } else {
+        messageDisplay.textContent += " 😢 Essaie encore pour battre ton record.";
+      }
+    }
+
+    // Lancer le jeu au chargement
+    window.onload = startGame;
+  </script>
+</body>
+</html>
